@@ -6,5 +6,4 @@ Adicionalmente, se proporciona información sobre si el médico trabaja con obra
 
 Una vez confirmado, el sistema envía automáticamente una confirmación por correo electrónico al paciente. Este correo contiene detalles esenciales del turno, como la fecha, la hora, el médico y la especialidad.
 
-![imagen](https://github.com/FranGenoud01/DSW-Backend/assets/130707329/54898ec3-25e1-4bab-9491-3b1f2add92fa)
-
+![imagen](https://github.com/FranGenoud01/DSW-Backend/assets/130707329/339b9225-27af-493e-a1d7-631ed8997af7)
