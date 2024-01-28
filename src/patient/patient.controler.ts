@@ -1,17 +1,21 @@
 import { NextFunction, Request, Response } from "express";
-import { PatientRepository } from "./patient.repository.js";
 import { Patient } from "./patient.entity.js";
+import { orm } from "../shared/orm.js";
 
-const Repository= new PatientRepository
+const entityManager= orm.em
+
 function sanitizePatientInput(req: Request, res: Response, next: NextFunction){
-  req.body.sanitizeInput={
-    nombre:req.body.nombre,
-    apellido:req.body.apellido,
-    direccion:req.body.direccion,
-    telefono:req.body.telefono,
-    sexo:req.body.sexo,
-    mail:req.body.mail,
-    usuario:req.body.usuario,
+  req.body.sanitizedInput={
+    DNI:req.body.DNI,
+    name:req.body.name,
+    surname:req.body.surname,
+    age:req.body.age,
+    birthdate:req.body.birthdate,
+    healthInsurance:req.body.healthInsurance,
+    adress:req.body.adress,
+    phoneNumber:req.body.phoneNumber,
+    sex:req.body.sex,
+    email:req.body.email,
     password:req.body.password
   }
   Object.keys(req.body.sanitizedInput).forEach( (key)=>{
@@ -21,50 +25,58 @@ function sanitizePatientInput(req: Request, res: Response, next: NextFunction){
 }
 
 async function findall(req:Request, res:Response){
-  res.json({data:Repository.findAll()})
+  try {
+    const patients= await entityManager.find(Patient,{},{ populate: ['healthInsurance']})
+    res.status(200).json({message: 'found all patients', data: patients})
+
+  } catch (error: any) {
+  res.status(500).json({message: error.message})
+  }
 }
 
 async function findOne(req: Request, res: Response) {
-  const id = req.params.id
-  const patient = await Repository.findOne({ id })
-  if (!patient) {
-    return res.status(404).send({ message: 'Patient not found' })
+  try{const DNI = req.params.id
+  const patient= await entityManager.findOneOrFail(Patient,{DNI},{ populate: ['healthInsurance']})
+  res.status(200).json({message: 'found patient', data: patient})
+  }catch(error:any){
+  res.status(500).json({message: error.message})
   }
-  res.json({ data: patient })
 }
 
 async function add(req: Request, res: Response) {
-  const input = req.body.sanitizedInput
-  const patientInput = new Patient(
-    input.nombre,
-    input.apellido,
-    input.direccion,
-    input.telefono,
-    input.sexo,
-    input.mail,
-    input.usuario,
-    input.password
-  )
-  const patient = await Repository.add(patientInput)
-  return res.status(201).send({ message: 'Patient created', data: patient })
+  try {
+    const patient = entityManager.create(Patient, req.body.sanitizedInput)
+    await entityManager.flush()
+    res.status(201).json({ message: 'patient created', data: patient })
+  } catch (error: any) {
+    res.status(500).json({ message: error.message })
+  }
 }
 
 async function update(req: Request, res: Response) {
-  const patient = await Repository.update(req.params.id, req.body.sanitizedInput)
-  if (!patient) {
-    return res.status(404).send({ message: 'Patient not found' })
+  try {
+    const DNI = req.params.id
+    const patientToUpdate = await entityManager.findOneOrFail(Patient, { DNI })
+    entityManager.assign(patientToUpdate, req.body.sanitizedInput)
+    await entityManager.flush()
+    res.status(200).json({ message: 'patient updated', data: patientToUpdate })
+  } catch (error: any) {
+    res.status(500).json({ message: error.message })
   }
-  return res.status(200).send({ message: 'Patient updated successfully', data: patient })
 }
 
-async function remove(req: Request, res: Response) {
-  const id = req.params.id
-  const patient = await Repository.delete({ id })
 
-  if (!patient) {
-    res.status(404).send({ message: 'Patient not found' })
-  } else {
-    res.status(200).send({ message: 'Patient deleted successfully' })
+async function remove(req: Request, res: Response) {
+  try {
+    const DNI = req.params.id
+    const patient = await entityManager.findOne(Patient, { DNI })
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' })
+    }
+    await entityManager.removeAndFlush(patient)
+    res.status(200).json({ message: 'Patient removed successfully' })
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
   }
 }
 
