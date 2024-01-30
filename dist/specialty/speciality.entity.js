@@ -7,33 +7,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Cascade, Collection, Entity, ManyToMany, OneToMany, Property } from "@mikro-orm/core";
+import { Cascade, Collection, Entity, OneToMany, Property } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/baseEntity.entity.js";
-import { Patient } from "../patient/patient.entity.js";
 import { Professional } from "../professional/professional.entity.js";
-let HealthInsurance = class HealthInsurance extends BaseEntity {
+let Speciality = class Speciality extends BaseEntity {
     constructor() {
         super(...arguments);
-        this.patients = new Collection(this);
         this.professionals = new Collection(this);
     }
 };
 __decorate([
     Property({ nullable: false, unique: true }),
     __metadata("design:type", String)
-], HealthInsurance.prototype, "description", void 0);
+], Speciality.prototype, "description", void 0);
 __decorate([
-    OneToMany(() => Patient, (patient) => patient.healthInsurance, {
+    OneToMany(() => Professional, (professional) => professional.speciality, {
         cascade: [Cascade.ALL]
     }),
     __metadata("design:type", Object)
-], HealthInsurance.prototype, "patients", void 0);
-__decorate([
-    ManyToMany(() => Professional, (professional) => professional.healthInsurances),
-    __metadata("design:type", Object)
-], HealthInsurance.prototype, "professionals", void 0);
-HealthInsurance = __decorate([
+], Speciality.prototype, "professionals", void 0);
+Speciality = __decorate([
     Entity()
-], HealthInsurance);
-export { HealthInsurance };
-//# sourceMappingURL=healthInsurance.entity.js.map
+], Speciality);
+export { Speciality };
+//# sourceMappingURL=speciality.entity.js.map

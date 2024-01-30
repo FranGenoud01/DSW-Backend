@@ -4,6 +4,9 @@ import { patientRouter } from './patient/patient.routes.js';
 import { RequestContext } from '@mikro-orm/core';
 import { orm, syncSchema } from './shared/orm.js';
 import { healthInsuranceRouter } from './health insurance/healthInsurance.routes.js';
+import { specialityRouter } from './specialty/speciality.route.js';
+import { professionalRouter } from './professional/professional.route.js';
+import { shiftRouter } from './shift/shift.route.js';
 const app = express();
 app.use(express.json());
 app.use((req, res, next) => {
@@ -16,6 +19,9 @@ await syncSchema().then(() => {
 });
 app.use('/patients', patientRouter);
 app.use('/healthInsurance', healthInsuranceRouter);
+app.use('/speciality', specialityRouter);
+app.use('/professional', professionalRouter);
+app.use('/shift', shiftRouter);
 app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' });
 });

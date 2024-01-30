@@ -7,33 +7,38 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Cascade, Collection, Entity, ManyToMany, OneToMany, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/baseEntity.entity.js";
 import { Patient } from "../patient/patient.entity.js";
 import { Professional } from "../professional/professional.entity.js";
-let HealthInsurance = class HealthInsurance extends BaseEntity {
-    constructor() {
-        super(...arguments);
-        this.patients = new Collection(this);
-        this.professionals = new Collection(this);
-    }
+let Shift = class Shift extends BaseEntity {
 };
 __decorate([
-    Property({ nullable: false, unique: true }),
+    Property({ nullable: false }),
     __metadata("design:type", String)
-], HealthInsurance.prototype, "description", void 0);
+], Shift.prototype, "dateShift", void 0);
 __decorate([
-    OneToMany(() => Patient, (patient) => patient.healthInsurance, {
-        cascade: [Cascade.ALL]
-    }),
-    __metadata("design:type", Object)
-], HealthInsurance.prototype, "patients", void 0);
+    Property({ nullable: false }),
+    __metadata("design:type", String)
+], Shift.prototype, "hourShift", void 0);
 __decorate([
-    ManyToMany(() => Professional, (professional) => professional.healthInsurances),
+    Property({ nullable: false }),
+    __metadata("design:type", String)
+], Shift.prototype, "status", void 0);
+__decorate([
+    Property({ nullable: false }),
+    __metadata("design:type", Number)
+], Shift.prototype, "price", void 0);
+__decorate([
+    ManyToOne(() => Patient, { nullable: true, unique: false }),
     __metadata("design:type", Object)
-], HealthInsurance.prototype, "professionals", void 0);
-HealthInsurance = __decorate([
+], Shift.prototype, "dniPatient", void 0);
+__decorate([
+    ManyToOne(() => Professional, { nullable: false, unique: false }),
+    __metadata("design:type", Object)
+], Shift.prototype, "licenseProfessional", void 0);
+Shift = __decorate([
     Entity()
-], HealthInsurance);
-export { HealthInsurance };
-//# sourceMappingURL=healthInsurance.entity.js.map
+], Shift);
+export { Shift };
+//# sourceMappingURL=shift.entity.js.map
