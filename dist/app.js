@@ -7,6 +7,7 @@ import { healthInsuranceRouter } from './health insurance/healthInsurance.routes
 import { specialityRouter } from './specialty/speciality.route.js';
 import { professionalRouter } from './professional/professional.route.js';
 import { shiftRouter } from './shift/shift.route.js';
+import { authRouter } from './auth/auth.route.js';
 const app = express();
 app.use(express.json());
 app.use((req, res, next) => {
@@ -22,6 +23,7 @@ app.use('/healthInsurance', healthInsuranceRouter);
 app.use('/speciality', specialityRouter);
 app.use('/professional', professionalRouter);
 app.use('/shift', shiftRouter);
+app.use('/auth', authRouter);
 app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' });
 });

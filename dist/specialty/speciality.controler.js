@@ -1,9 +1,10 @@
-import { orm } from "../shared/orm.js";
-import { Speciality } from "./speciality.entity.js";
+import { orm } from '../shared/orm.js';
+import SpecialityService from './speciality.service.js';
 const entityManager = orm.em;
+const specialityService = new SpecialityService(entityManager);
 function sanitizedSpecialityInput(req, res, next) {
     req.body.sanitizedInput = {
-        description: req.body.description
+        description: req.body.description,
     };
     Object.keys(req.body.sanitizedInput).forEach((key) => {
         if (req.body.sanitizedInput[key] === undefined) {
@@ -14,8 +15,10 @@ function sanitizedSpecialityInput(req, res, next) {
 }
 async function findall(req, res) {
     try {
-        const specialities = await entityManager.find(Speciality, {});
-        res.status(200).json({ message: 'Found all specialities', data: specialities });
+        const specialities = await specialityService.findAllSpecialities();
+        res
+            .status(200)
+            .json({ message: 'Found all specialities', data: specialities });
     }
     catch (error) {
         res.status(500).json({ message: error.message });
@@ -24,7 +27,7 @@ async function findall(req, res) {
 async function findOne(req, res) {
     try {
         const id = Number.parseInt(req.params.id);
-        const speciality = await entityManager.findOneOrFail(Speciality, { id });
+        const speciality = await specialityService.findOneSpeciality(id);
         res.status(200).json({ message: 'Found speciality', data: speciality });
     }
     catch (error) {
@@ -33,8 +36,7 @@ async function findOne(req, res) {
 }
 async function add(req, res) {
     try {
-        const speciality = entityManager.create(Speciality, req.body.sanitizedInput);
-        await entityManager.flush();
+        const speciality = await specialityService.createSpeciality(req.body);
         res.status(201).json({ message: 'Speciality created', data: speciality });
     }
     catch (error) {
@@ -44,10 +46,10 @@ async function add(req, res) {
 async function update(req, res) {
     try {
         const id = Number.parseInt(req.params.id);
-        const specialityToUpdate = await entityManager.findOneOrFail(Speciality, { id });
-        entityManager.assign(specialityToUpdate, req.body.sanitizedInput);
-        await entityManager.flush();
-        res.status(200).json({ message: 'Speciality updated', data: specialityToUpdate });
+        const specialityToUpdate = await specialityService.updateSpeciality(id, req.body);
+        res
+            .status(200)
+            .json({ message: 'Speciality updated', data: specialityToUpdate });
     }
     catch (error) {
         res.status(500).json({ message: error.message });
@@ -56,11 +58,7 @@ async function update(req, res) {
 async function remove(req, res) {
     try {
         const id = Number.parseInt(req.params.id);
-        const speciality = await entityManager.findOne(Speciality, { id });
-        if (!speciality) {
-            return res.status(404).json({ message: 'Speciality not found' });
-        }
-        await entityManager.removeAndFlush(speciality);
+        await specialityService.removeSpeciality(id);
         res.status(200).json({ message: 'Speciality removed successfully' });
     }
     catch (error) {

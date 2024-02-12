@@ -1,12 +1,47 @@
-import { Router } from "express";
-import { add, findOne, findall, getProfBySpeciality, remove, sanitizedProfessionalInput, update } from "./professional.controler.js";
+import { Router, Request, Response } from 'express';
+import {
+  add,
+  findOne,
+  findall,
+  getProf,
+  remove,
+  update,
+} from './professional.controler.js';
+import { orm } from '../shared/orm.js';
+import { AuthMiddleware } from '../auth/auth.middleware.js';
 
-export const professionalRouter= Router()
+const entityManager = orm.em;
 
-professionalRouter.get('/', findall)
-professionalRouter.get('/:id', findOne)
-professionalRouter.post('/', sanitizedProfessionalInput, add)
-professionalRouter.get('/:id/speciality', getProfBySpeciality)
-professionalRouter.put('/:id', sanitizedProfessionalInput, update)
-professionalRouter.patch('/:id', sanitizedProfessionalInput, update)
-professionalRouter.delete('/:id', remove)
+const authMiddleare = new AuthMiddleware(entityManager);
+export const professionalRouter = Router();
+
+professionalRouter.get(
+  '/',
+  (req, res, next) => authMiddleare.authenticateToken(req, res, next),
+  (req: Request, res: Response) => findall(req, res)
+);
+professionalRouter.get(
+  '/:id',
+  (req, res, next) => authMiddleare.authenticateToken(req, res, next),
+  (req: Request, res: Response) => findOne(req, res)
+);
+professionalRouter.post(
+  '/',
+  (req, res, next) => authMiddleare.authenticateToken(req, res, next),
+  (req: Request, res: Response) => add(req, res)
+);
+professionalRouter.get(
+  '/:id/speciality',
+  (req, res, next) => authMiddleare.authenticateToken(req, res, next),
+  (req: Request, res: Response) => getProf(req, res)
+);
+professionalRouter.put(
+  '/:id',
+  (req, res, next) => authMiddleare.authenticateToken(req, res, next),
+  (req: Request, res: Response) => update(req, res)
+);
+professionalRouter.delete(
+  '/:id',
+  (req, res, next) => authMiddleare.authenticateToken(req, res, next),
+  (req: Request, res: Response) => remove(req, res)
+);
