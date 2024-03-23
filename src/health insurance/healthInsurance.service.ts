@@ -19,6 +19,16 @@ class HealthInsuranceService {
     }
   }
 
+  async findHealthInsuranceByDescription(description: string) {
+    try {
+      return await this.entityManager.findOneOrFail(HealthInsurance, {
+        description,
+      });
+    } catch (error) {
+      return null;
+    }
+  }
+
   async createHealthInsurance(
     healthInsurance: HealthInsurance
   ): Promise<HealthInsurance> {

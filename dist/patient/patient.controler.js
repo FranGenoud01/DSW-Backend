@@ -38,7 +38,7 @@ async function findOne(req, res) {
         res.status(200).json({ message: 'Found patient', data: patient });
     }
     catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 }
 async function add(req, res) {
@@ -47,7 +47,9 @@ async function add(req, res) {
         res.status(201).json({ message: 'Patient created', data: patient });
     }
     catch (error) {
-        res.status(500).json({ message: error.message });
+        return res
+            .status(400)
+            .json({ message: `Ya existe un paciente con ese DNI` });
     }
 }
 async function update(req, res) {

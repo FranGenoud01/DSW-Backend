@@ -15,15 +15,9 @@ const entityManager = orm.em;
 const authMiddleare = new AuthMiddleware(entityManager);
 export const professionalRouter = Router();
 
-professionalRouter.get(
-  '/',
-  (req, res, next) => authMiddleare.authenticateToken(req, res, next),
-  (req: Request, res: Response) => findall(req, res)
-);
-professionalRouter.get(
-  '/:id',
-  (req, res, next) => authMiddleare.authenticateToken(req, res, next),
-  (req: Request, res: Response) => findOne(req, res)
+professionalRouter.get('/', (req: Request, res: Response) => findall(req, res));
+professionalRouter.get('/:id', (req: Request, res: Response) =>
+  findOne(req, res)
 );
 professionalRouter.post(
   '/',

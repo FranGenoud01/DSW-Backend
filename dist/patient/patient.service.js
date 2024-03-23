@@ -40,6 +40,10 @@ class PatientService {
         }
         const dni = patientData.DNI;
         const hashedPassword = await this.hashPassword(patientData.password);
+        const patient = await this.findOneByDNI(dni);
+        if (patient) {
+            throw new Error('Ya existe un paciente con este DNI');
+        }
         const updatedPatientData = {
             ...patientData,
             password: hashedPassword,

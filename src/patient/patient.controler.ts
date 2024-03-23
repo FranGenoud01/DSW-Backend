@@ -42,7 +42,7 @@ async function findOne(req: Request, res: Response) {
     const patient = await patientService.findOneByDNI(DNI);
     res.status(200).json({ message: 'Found patient', data: patient });
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 }
 
@@ -53,7 +53,9 @@ async function add(req: Request, res: Response) {
     );
     res.status(201).json({ message: 'Patient created', data: patient });
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    return res
+      .status(400)
+      .json({ message: `Ya existe un paciente con ese DNI` });
   }
 }
 

@@ -14,6 +14,16 @@ class HealthInsuranceService {
             return null;
         }
     }
+    async findHealthInsuranceByDescription(description) {
+        try {
+            return await this.entityManager.findOneOrFail(HealthInsurance, {
+                description,
+            });
+        }
+        catch (error) {
+            return null;
+        }
+    }
     async createHealthInsurance(healthInsurance) {
         try {
             const newHealthInsurance = this.entityManager.create(HealthInsurance, healthInsurance);

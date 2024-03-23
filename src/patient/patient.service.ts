@@ -1,6 +1,7 @@
 import { Patient } from './patient.entity.js';
 import * as bcrypt from 'bcrypt';
 import { EntityManager } from '@mikro-orm/mysql';
+import { error } from 'console';
 
 class PatientService {
   private readonly entityManager: EntityManager;
@@ -57,6 +58,10 @@ class PatientService {
     }
     const dni = patientData.DNI;
     const hashedPassword = await this.hashPassword(patientData.password);
+    const patient = await this.findOneByDNI(dni);
+    if (patient) {
+      throw new Error('Ya existe un paciente con este DNI');
+    }
     const updatedPatientData = {
       ...patientData,
       password: hashedPassword,

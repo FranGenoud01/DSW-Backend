@@ -1,8 +1,10 @@
 import { Router, Request, Response } from 'express';
 import {
+  cancel,
+  findByDNI,
   findOne,
   findall,
-  generateShiftWeakly,
+  generateShiftMonthly,
   remove,
   removeByProf,
   update,
@@ -26,15 +28,23 @@ shiftRouter.get(
   (req, res, next) => authMiddleare.authenticateToken(req, res, next),
   (req: Request, res: Response) => findOne(req, res)
 );
+shiftRouter.get('/:dni/pat', (req: Request, res: Response) =>
+  findByDNI(req, res)
+);
 shiftRouter.post(
   '/:id/professional',
   (req, res, next) => authMiddleare.authenticateToken(req, res, next),
-  (req: Request, res: Response) => generateShiftWeakly(req, res)
+  (req: Request, res: Response) => generateShiftMonthly(req, res)
 );
 shiftRouter.put(
   '/:id/:dni',
   (req, res, next) => authMiddleare.authenticateToken(req, res, next),
   (req: Request, res: Response) => update(req, res)
+);
+shiftRouter.put(
+  '/:id',
+  (req, res, next) => authMiddleare.authenticateToken(req, res, next),
+  (req: Request, res: Response) => cancel(req, res)
 );
 shiftRouter.delete(
   '/:id',

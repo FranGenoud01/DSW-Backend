@@ -8,14 +8,18 @@ import { specialityRouter } from './specialty/speciality.route.js';
 import { professionalRouter } from './professional/professional.route.js';
 import { shiftRouter } from './shift/shift.route.js';
 import { authRouter } from './auth/auth.route.js';
+import cors from 'cors';
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
     RequestContext.create(orm.em, next);
 });
-await syncSchema().then(() => {
+await syncSchema()
+    .then(() => {
     console.log('db conectada');
-}).catch((e) => {
+})
+    .catch((e) => {
     console.log(e);
 });
 app.use('/patients', patientRouter);

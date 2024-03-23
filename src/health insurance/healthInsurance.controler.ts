@@ -48,6 +48,20 @@ async function findOne(req: Request, res: Response) {
   }
 }
 
+async function findByDescription(req: Request, res: Response) {
+  try {
+    const desc = req.params.desc;
+    const healthInsurance =
+      await healthInsuranceService.findHealthInsuranceByDescription(desc);
+    if (!healthInsurance) return res.status(404).json({ message: 'Not found' });
+    return res
+      .status(200)
+      .json({ message: 'Found health insurance', data: healthInsurance });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+}
+
 async function add(req: Request, res: Response) {
   try {
     const healthInsurance = await healthInsuranceService.createHealthInsurance(
@@ -85,4 +99,12 @@ async function remove(req: Request, res: Response) {
   }
 }
 
-export { sanitizedHealthInsuranceInput, findall, findOne, add, update, remove };
+export {
+  sanitizedHealthInsuranceInput,
+  findall,
+  findOne,
+  add,
+  update,
+  remove,
+  findByDescription,
+};

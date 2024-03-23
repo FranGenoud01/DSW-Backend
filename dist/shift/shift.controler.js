@@ -4,33 +4,33 @@ import { Shift } from './shift.entity.js';
 import ShiftService from './shift.service.js';
 const entityManager = orm.em;
 const shiftService = new ShiftService(entityManager);
-async function generateShiftWeakly(req, res) {
+async function generateShiftMonthly(req, res) {
     try {
         const licenseNumber = req.params.id;
         const professional = await entityManager.findOneOrFail(Professional, {
             licenseNumber,
         });
-        // Obtener la fecha actual y calcular el primer y último día de la semana actual
+        // Obtener la fecha actual y calcular el primer y último día del mes actual
         const dateNow = new Date();
-        const dayNow = dateNow.getDay();
-        const firstDayWeek = new Date(dateNow);
-        firstDayWeek.setDate(dateNow.getDate() - dayNow + 1);
-        const lastDatWeek = new Date(firstDayWeek);
-        lastDatWeek.setDate(firstDayWeek.getDate() + 4);
+        const firstDayMonth = new Date(dateNow.getFullYear(), dateNow.getMonth(), 1);
+        const lastDayMonth = new Date(dateNow.getFullYear(), dateNow.getMonth() + 1, 0);
         const shifts = [];
-        // Iterar sobre cada día de la semana actual
-        for (let date = new Date(firstDayWeek); date <= lastDatWeek; date.setDate(date.getDate() + 1)) {
-            // Iterar sobre cada hora laboral del día (de 8 am a 4 pm)
-            for (let hour = 8; hour <= 16; hour++) {
-                const newShift = new Shift();
-                const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); // Crear una nueva instancia de Date solo con la fecha
-                const formattedDate = newDate.toISOString().split('T')[0]; // Obtener la fecha formateada como "YYYY-MM-DD"
-                newShift.dateShift = formattedDate;
-                newShift.hourShift = `${hour}:00`;
-                newShift.status = 'disponible';
-                newShift.licenseProfessional = professional;
-                newShift.price = professional.price;
-                shifts.push(newShift);
+        // Iterar sobre cada día del mes actual
+        for (let date = new Date(firstDayMonth); date <= lastDayMonth; date.setDate(date.getDate() + 1)) {
+            // Verificar si el día actual es un día de semana (lunes a viernes)
+            const dayOfWeek = date.getDay();
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                // 0 es domingo, 6 es sábado
+                for (let hour = 8; hour <= 16; hour++) {
+                    const newShift = new Shift();
+                    const formattedDate = date.toISOString().split('T')[0]; // Obtener la fecha formateada como "YYYY-MM-DD"
+                    newShift.dateShift = formattedDate;
+                    newShift.hourShift = `${hour}:00`;
+                    newShift.status = 'disponible';
+                    newShift.licenseProfessional = professional;
+                    newShift.price = professional.price;
+                    shifts.push(newShift);
+                }
             }
         }
         for (const newShift of shifts) {
@@ -65,6 +65,18 @@ async function findOne(req, res) {
         return res.status(500).json({ message: error.message });
     }
 }
+async function findByDNI(req, res) {
+    try {
+        const dni = req.params.dni;
+        const shift = await shiftService.findOneByDNI(dni);
+        if (!shift)
+            return res.status(404).json({ message: 'Not found' });
+        return res.status(200).json({ message: 'Found shift', data: shift });
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
 async function update(req, res) {
     try {
         const shiftId = Number.parseInt(req.params.id);
@@ -73,6 +85,18 @@ async function update(req, res) {
         if (!shiftToUpdate)
             return res.status(404).json({ message: 'Shift not found' });
         res.status(200).json({ message: 'Shift updated', data: shiftToUpdate });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+async function cancel(req, res) {
+    try {
+        const shiftId = Number.parseInt(req.params.id);
+        const shiftToCancel = await shiftService.cancelShift(shiftId);
+        if (!shiftToCancel)
+            return res.status(404).json({ message: 'Shift not found' });
+        res.status(200).json({ message: 'Shift canceled', data: shiftToCancel });
     }
     catch (error) {
         res.status(500).json({ message: error.message });
@@ -101,5 +125,5 @@ async function removeByProf(req, res) {
         res.status(500).json({ message: error.message });
     }
 }
-export { generateShiftWeakly, remove, update, removeByProf, findall, findOne };
+export { generateShiftMonthly, remove, update, cancel, removeByProf, findall, findOne, findByDNI, };
 //# sourceMappingURL=shift.controler.js.map
