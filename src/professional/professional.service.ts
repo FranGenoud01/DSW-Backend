@@ -1,6 +1,7 @@
 import { EntityManager } from '@mikro-orm/mysql';
 import { Professional } from './professional.entity.js';
 import { Speciality } from '../specialty/speciality.entity.js';
+import { HealthInsurance } from '../health insurance/healthInsurance.entity.js';
 
 class ProfessionalService {
   private readonly entityManager: EntityManager;
@@ -12,7 +13,7 @@ class ProfessionalService {
     return await this.entityManager.find(
       Professional,
       {},
-      { populate: ['speciality'] }
+      { populate: ['speciality' as 'speciality'] }
     );
   }
 
@@ -21,7 +22,7 @@ class ProfessionalService {
       return await this.entityManager.findOneOrFail(
         Professional,
         { licenseNumber },
-        { populate: ['speciality'] }
+        { populate: ['speciality' as 'speciality'] }
       );
     } catch (error) {
       return null;
@@ -72,7 +73,29 @@ class ProfessionalService {
       const professionals = await this.entityManager.find(
         Professional,
         { speciality },
-        { populate: ['speciality'] }
+        { populate: ['speciality' as 'speciality'] }
+      );
+      return professionals;
+    } catch (error: any) {
+      return null;
+    }
+  }
+
+  async getProfByHealthInsurance(idHealthInsurance: number) {
+    try {
+      const healthInsurance = await this.entityManager.findOneOrFail(
+        HealthInsurance,
+        idHealthInsurance
+      );
+      const professionals = await this.entityManager.find(
+        Professional,
+        { healthInsurances: healthInsurance },
+        {
+          populate: [
+            'speciality' as 'speciality',
+            'healthInsurances' as 'healthInsurances',
+          ],
+        }
       );
       return professionals;
     } catch (error: any) {

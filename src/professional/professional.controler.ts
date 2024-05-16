@@ -72,6 +72,20 @@ async function getProf(req: Request, res: Response) {
   }
 }
 
+async function getProfByHealthInsurance(req: Request, res: Response) {
+  try {
+    const idHealthInsurance = parseInt(req.params.id);
+    const professionals = await professionalService.getProfByHealthInsurance(
+      idHealthInsurance
+    );
+    res
+      .status(200)
+      .json({ message: 'Found all professionals', data: professionals });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 async function update(req: Request, res: Response) {
   try {
     const licenseNumber = req.params.id;
@@ -105,4 +119,5 @@ export {
   update,
   remove,
   getProf,
+  getProfByHealthInsurance,
 };

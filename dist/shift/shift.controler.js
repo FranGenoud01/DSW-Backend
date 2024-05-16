@@ -81,7 +81,8 @@ async function update(req, res) {
     try {
         const shiftId = Number.parseInt(req.params.id);
         const DNI = req.params.dni;
-        const shiftToUpdate = await shiftService.updateShift(shiftId, DNI);
+        const price = req.body.price;
+        const shiftToUpdate = await shiftService.updateShift(shiftId, DNI, price);
         if (!shiftToUpdate)
             return res.status(404).json({ message: 'Shift not found' });
         res.status(200).json({ message: 'Shift updated', data: shiftToUpdate });
@@ -97,6 +98,33 @@ async function cancel(req, res) {
         if (!shiftToCancel)
             return res.status(404).json({ message: 'Shift not found' });
         res.status(200).json({ message: 'Shift canceled', data: shiftToCancel });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+async function getShiftsByProfessional(req, res) {
+    try {
+        const licenseProfessional = req.params.licenseNumber;
+        const shifts = await shiftService.getShiftsFreeByProf(licenseProfessional);
+        res.status(200).json({ message: 'Shifts avaialable', data: shifts });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+async function getHoursFreeByDate(req, res) {
+    try {
+        const licenseProfessional = req.params.licenseNumber;
+        const date = req.params.date;
+        const shifts = (await shiftService.getShiftsFreeByProf(licenseProfessional)) || [];
+        if (shifts.length === 0) {
+            return res.status(404).json({
+                message: 'No hay turnos disponibles para el profesional especificado.',
+            });
+        }
+        const hours = await shiftService.getHoursFreeByProf(shifts, date);
+        res.status(200).json({ message: 'Hours available', data: hours });
     }
     catch (error) {
         res.status(500).json({ message: error.message });
@@ -125,5 +153,5 @@ async function removeByProf(req, res) {
         res.status(500).json({ message: error.message });
     }
 }
-export { generateShiftMonthly, remove, update, cancel, removeByProf, findall, findOne, findByDNI, };
+export { generateShiftMonthly, getShiftsByProfessional, getHoursFreeByDate, remove, update, cancel, removeByProf, findall, findOne, findByDNI, };
 //# sourceMappingURL=shift.controler.js.map

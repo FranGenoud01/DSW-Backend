@@ -61,6 +61,18 @@ async function getProf(req, res) {
         res.status(500).json({ message: error.message });
     }
 }
+async function getProfByHealthInsurance(req, res) {
+    try {
+        const idHealthInsurance = parseInt(req.params.id);
+        const professionals = await professionalService.getProfByHealthInsurance(idHealthInsurance);
+        res
+            .status(200)
+            .json({ message: 'Found all professionals', data: professionals });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
 async function update(req, res) {
     try {
         const licenseNumber = req.params.id;
@@ -83,5 +95,5 @@ async function remove(req, res) {
         res.status(500).json({ message: error.message });
     }
 }
-export { sanitizedProfessionalInput, findOne, findall, add, update, remove, getProf, };
+export { sanitizedProfessionalInput, findOne, findall, add, update, remove, getProf, getProfByHealthInsurance, };
 //# sourceMappingURL=professional.controler.js.map

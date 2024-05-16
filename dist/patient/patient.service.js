@@ -19,7 +19,12 @@ class PatientService {
         const patientToUpdate = await this.entityManager.findOneOrFail(Patient, {
             DNI,
         });
-        this.entityManager.assign(patientToUpdate, patientData);
+        const hashedPassword = await this.hashPassword(patientData.password);
+        const patient = {
+            ...patientData,
+            password: hashedPassword,
+        };
+        this.entityManager.assign(patientToUpdate, patient);
         await this.entityManager.flush();
         return patientToUpdate;
     }
@@ -41,6 +46,7 @@ class PatientService {
         const dni = patientData.DNI;
         const hashedPassword = await this.hashPassword(patientData.password);
         const patient = await this.findOneByDNI(dni);
+        const rol = 'user';
         if (patient) {
             throw new Error('Ya existe un paciente con este DNI');
         }

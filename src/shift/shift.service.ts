@@ -28,19 +28,9 @@ class ShiftService {
         dniPatient: patient,
       });
       const now = new Date();
-      console.log(now);
       const shiftsFiltrados = shifts.filter((shift) => {
-        const fechaTurno = new Date(shift.dateShift);
-        console.log(fechaTurno);
-
-        if (this.isSameDay(fechaTurno, now)) {
-          console.log(fechaTurno >= now);
-
-          return fechaTurno >= now && this.isAfterHour(now, shift.hourShift);
-        } else {
-          console.log(fechaTurno >= now);
-          return fechaTurno >= now;
-        }
+        const fechaTurno = new Date(shift.dateShift + ' ' + shift.hourShift);
+        return fechaTurno > now;
       });
       return shiftsFiltrados;
     } catch (error) {
@@ -48,26 +38,7 @@ class ShiftService {
     }
   }
 
-  private isSameDay(date1: Date, date2: Date): boolean {
-    console.log(date1.getFullYear(), date2.getFullYear());
-    console.log(date1.getMonth(), date2.getMonth());
-    console.log(date1.getDate(), date2.getDate());
-    return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate()
-    );
-  }
-
-  private isAfterHour(now: Date, hourShift: string): boolean {
-    const [hour, minute] = hourShift.split(':').map(Number);
-    return (
-      now.getHours() < hour ||
-      (now.getHours() === hour && now.getMinutes() < minute)
-    );
-  }
-
-  async updateShift(idShift: number, dniPatient: string) {
+  async updateShift(idShift: number, dniPatient: string, price: number) {
     try {
       const shiftToUpdate = await this.entityManager.findOneOrFail(
         Shift,
@@ -79,6 +50,7 @@ class ShiftService {
       if (!patient) throw new Error('Patient not found');
       shiftToUpdate.dniPatient = patient;
       shiftToUpdate.status = 'ocupado';
+      shiftToUpdate.price = price;
       this.entityManager.assign(shiftToUpdate, shiftToUpdate);
       await this.entityManager.flush();
       return shiftToUpdate;
@@ -101,6 +73,33 @@ class ShiftService {
       console.error('Error al cancelar el turno:', error.message);
       return null;
     }
+  }
+
+  async getShiftsFreeByProf(licenseNumber: string, today: Date = new Date()) {
+    try {
+      const professional = await this.entityManager.findOneOrFail(
+        Professional,
+        { licenseNumber }
+      );
+      const dateStr = today.toISOString().split('T')[0];
+      const shifts = await this.entityManager.find(Shift, {
+        licenseProfessional: professional,
+        status: 'disponible',
+        dniPatient: null,
+        dateShift: {
+          $gt: dateStr,
+        },
+      });
+      return shifts;
+    } catch (error: any) {
+      console.error('Error al encontrar un turno', error.message);
+      return null;
+    }
+  }
+
+  async getHoursFreeByProf(shifts: Shift[], date: string) {
+    const matchingShifts = shifts.filter((shift) => shift.dateShift === date);
+    return matchingShifts;
   }
 
   async removeShift(id: number) {

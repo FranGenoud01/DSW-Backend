@@ -1,5 +1,6 @@
 import { Professional } from './professional.entity.js';
 import { Speciality } from '../specialty/speciality.entity.js';
+import { HealthInsurance } from '../health insurance/healthInsurance.entity.js';
 class ProfessionalService {
     constructor(entityManager) {
         this.entityManager = entityManager;
@@ -44,6 +45,21 @@ class ProfessionalService {
         try {
             const speciality = await this.entityManager.findOneOrFail(Speciality, idSpeciality);
             const professionals = await this.entityManager.find(Professional, { speciality }, { populate: ['speciality'] });
+            return professionals;
+        }
+        catch (error) {
+            return null;
+        }
+    }
+    async getProfByHealthInsurance(idHealthInsurance) {
+        try {
+            const healthInsurance = await this.entityManager.findOneOrFail(HealthInsurance, idHealthInsurance);
+            const professionals = await this.entityManager.find(Professional, { healthInsurances: healthInsurance }, {
+                populate: [
+                    'speciality',
+                    'healthInsurances',
+                ],
+            });
             return professionals;
         }
         catch (error) {

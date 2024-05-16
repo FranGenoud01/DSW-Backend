@@ -7,8 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
-import { HealthInsurance } from "../health insurance/healthInsurance.entity.js";
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { HealthInsurance } from '../health insurance/healthInsurance.entity.js';
 let Patient = class Patient {
 };
 __decorate([
@@ -23,10 +23,6 @@ __decorate([
     Property({ nullable: false }),
     __metadata("design:type", String)
 ], Patient.prototype, "surname", void 0);
-__decorate([
-    Property({ nullable: false }),
-    __metadata("design:type", String)
-], Patient.prototype, "age", void 0);
 __decorate([
     Property({ nullable: false }),
     __metadata("design:type", String)

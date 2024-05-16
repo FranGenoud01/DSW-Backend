@@ -7,7 +7,6 @@ function sanitizePatientInput(req, res, next) {
         DNI: req.body.DNI,
         name: req.body.name,
         surname: req.body.surname,
-        age: req.body.age,
         birthdate: req.body.birthdate,
         healthInsurance: req.body.healthInsurance,
         adress: req.body.adress,

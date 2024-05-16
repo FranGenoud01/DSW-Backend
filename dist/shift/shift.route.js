@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { cancel, findByDNI, findOne, findall, generateShiftMonthly, remove, removeByProf, update, } from './shift.controler.js';
+import { cancel, findByDNI, findOne, findall, generateShiftMonthly, getHoursFreeByDate, getShiftsByProfessional, remove, removeByProf, update, } from './shift.controler.js';
 import { orm } from '../shared/orm.js';
 import { AuthMiddleware } from '../auth/auth.middleware.js';
 const entityManager = orm.em;
@@ -8,6 +8,8 @@ export const shiftRouter = Router();
 shiftRouter.get('/', (req, res, next) => authMiddleare.authenticateToken(req, res, next), (req, res) => findall(req, res));
 shiftRouter.get('/:id', (req, res, next) => authMiddleare.authenticateToken(req, res, next), (req, res) => findOne(req, res));
 shiftRouter.get('/:dni/pat', (req, res) => findByDNI(req, res));
+shiftRouter.get('/:licenseNumber/professional', (req, res, next) => authMiddleare.authenticateToken(req, res, next), (req, res) => getShiftsByProfessional(req, res));
+shiftRouter.get('/:licenseNumber/professional/:date/free', (req, res, next) => authMiddleare.authenticateToken(req, res, next), (req, res) => getHoursFreeByDate(req, res));
 shiftRouter.post('/:id/professional', (req, res, next) => authMiddleare.authenticateToken(req, res, next), (req, res) => generateShiftMonthly(req, res));
 shiftRouter.put('/:id/:dni', (req, res, next) => authMiddleare.authenticateToken(req, res, next), (req, res) => update(req, res));
 shiftRouter.put('/:id', (req, res, next) => authMiddleare.authenticateToken(req, res, next), (req, res) => cancel(req, res));
