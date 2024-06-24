@@ -33,6 +33,7 @@ export class AuthService {
       DNI: patient.DNI,
       name: patient.name,
       surname: patient.surname,
+      role: patient.role,
       exp: expirationDate.getTime() / 1000,
     };
     return {

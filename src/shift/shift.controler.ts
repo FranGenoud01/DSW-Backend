@@ -25,6 +25,20 @@ async function generateShiftMonthly(req: Request, res: Response) {
       dateNow.getMonth() + 1,
       0
     );
+    // Verificar si el profesional ya tiene turnos generados en el mes actual
+    const existingShifts = await entityManager.find(Shift, {
+      licenseProfessional: professional,
+      dateShift: {
+        $gte: firstDayMonth.toISOString().split('T')[0],
+        $lte: lastDayMonth.toISOString().split('T')[0],
+      },
+    });
+
+    if (existingShifts.length > 0) {
+      return res.status(400).json({
+        message: 'El profesional ya tiene turnos generados este mes.',
+      });
+    }
     const shifts = [];
     // Iterar sobre cada día del mes actual
     for (

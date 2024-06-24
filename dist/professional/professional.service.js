@@ -6,7 +6,12 @@ class ProfessionalService {
         this.entityManager = entityManager;
     }
     async findAllProfessionals() {
-        return await this.entityManager.find(Professional, {}, { populate: ['speciality'] });
+        return await this.entityManager.find(Professional, {}, {
+            populate: [
+                'speciality',
+                'healthInsurances',
+            ],
+        });
     }
     async findOneProfessional(licenseNumber) {
         try {
@@ -18,6 +23,10 @@ class ProfessionalService {
     }
     async createProfessional(professionalData) {
         try {
+            const professional = await this.findOneProfessional(professionalData.licenseNumber);
+            if (professional) {
+                throw new Error('Ya existe un profesional con esta matrícula');
+            }
             const newProfessional = this.entityManager.create(Professional, professionalData);
             await this.entityManager.persistAndFlush(newProfessional);
             return newProfessional;
@@ -44,7 +53,31 @@ class ProfessionalService {
     async getProfBySpeciality(idSpeciality) {
         try {
             const speciality = await this.entityManager.findOneOrFail(Speciality, idSpeciality);
-            const professionals = await this.entityManager.find(Professional, { speciality }, { populate: ['speciality'] });
+            const professionals = await this.entityManager.find(Professional, { speciality }, {
+                populate: [
+                    'speciality',
+                    'healthInsurances',
+                ],
+            });
+            return professionals;
+        }
+        catch (error) {
+            return null;
+        }
+    }
+    async getProfBySpecialityAndHealthInsurance(idSpeciality, idHealthInsurance) {
+        try {
+            const speciality = await this.entityManager.findOneOrFail(Speciality, idSpeciality);
+            const healthInsurance = await this.entityManager.findOneOrFail(HealthInsurance, idHealthInsurance);
+            const professionals = await this.entityManager.find(Professional, {
+                speciality,
+                healthInsurances: healthInsurance,
+            }, {
+                populate: [
+                    'speciality',
+                    'healthInsurances',
+                ],
+            });
             return professionals;
         }
         catch (error) {

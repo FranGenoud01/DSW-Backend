@@ -54,6 +54,7 @@ class PatientService {
             ...patientData,
             password: hashedPassword,
             DNI: dni,
+            role: rol,
         };
         const newPatient = this.entityManager.create(Patient, updatedPatientData);
         await this.entityManager.persistAndFlush(newPatient);

@@ -13,7 +13,12 @@ class ProfessionalService {
     return await this.entityManager.find(
       Professional,
       {},
-      { populate: ['speciality' as 'speciality'] }
+      {
+        populate: [
+          'speciality' as 'speciality',
+          'healthInsurances' as 'healthInsurances',
+        ],
+      }
     );
   }
 
@@ -33,6 +38,12 @@ class ProfessionalService {
     professionalData: Professional
   ): Promise<Professional> {
     try {
+      const professional = await this.findOneProfessional(
+        professionalData.licenseNumber
+      );
+      if (professional) {
+        throw new Error('Ya existe un profesional con esta matrícula');
+      }
       const newProfessional = this.entityManager.create(
         Professional,
         professionalData
@@ -73,7 +84,44 @@ class ProfessionalService {
       const professionals = await this.entityManager.find(
         Professional,
         { speciality },
-        { populate: ['speciality' as 'speciality'] }
+        {
+          populate: [
+            'speciality' as 'speciality',
+            'healthInsurances' as 'healthInsurances',
+          ],
+        }
+      );
+      return professionals;
+    } catch (error: any) {
+      return null;
+    }
+  }
+
+  async getProfBySpecialityAndHealthInsurance(
+    idSpeciality: number,
+    idHealthInsurance: number
+  ) {
+    try {
+      const speciality = await this.entityManager.findOneOrFail(
+        Speciality,
+        idSpeciality
+      );
+      const healthInsurance = await this.entityManager.findOneOrFail(
+        HealthInsurance,
+        idHealthInsurance
+      );
+      const professionals = await this.entityManager.find(
+        Professional,
+        {
+          speciality,
+          healthInsurances: healthInsurance,
+        },
+        {
+          populate: [
+            'speciality' as 'speciality',
+            'healthInsurances' as 'healthInsurances',
+          ],
+        }
       );
       return professionals;
     } catch (error: any) {

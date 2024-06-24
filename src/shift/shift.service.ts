@@ -28,11 +28,23 @@ class ShiftService {
         dniPatient: patient,
       });
       const now = new Date();
-      const shiftsFiltrados = shifts.filter((shift) => {
+      const filteredShifts = shifts.filter((shift) => {
         const fechaTurno = new Date(shift.dateShift + ' ' + shift.hourShift);
         return fechaTurno > now;
       });
-      return shiftsFiltrados;
+      filteredShifts.sort((shiftA, shiftB) => {
+        const dateA = new Date(shiftA.dateShift + ' ' + shiftA.hourShift);
+        const dateB = new Date(shiftB.dateShift + ' ' + shiftB.hourShift);
+
+        if (dateA < dateB) {
+          return -1;
+        } else if (dateA > dateB) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+      return filteredShifts;
     } catch (error) {
       return null;
     }

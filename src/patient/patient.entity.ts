@@ -32,4 +32,7 @@ export class Patient {
 
   @Property({ nullable: false })
   public password!: string;
+
+  @Property({ nullable: false })
+  public role!: string;
 }

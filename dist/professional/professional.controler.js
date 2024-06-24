@@ -46,7 +46,9 @@ async function add(req, res) {
             .json({ message: 'Professional created', data: professional });
     }
     catch (error) {
-        res.status(500).json({ message: error.message });
+        return res
+            .status(400)
+            .json({ message: `Ya existe un profesional con esa matrícula` });
     }
 }
 async function getProf(req, res) {
@@ -65,6 +67,19 @@ async function getProfByHealthInsurance(req, res) {
     try {
         const idHealthInsurance = parseInt(req.params.id);
         const professionals = await professionalService.getProfByHealthInsurance(idHealthInsurance);
+        res
+            .status(200)
+            .json({ message: 'Found all professionals', data: professionals });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+async function getProfByHealthAndSpeciality(req, res) {
+    try {
+        const idHealthInsurance = parseInt(req.params.healthInsurance);
+        const idSpeciality = parseInt(req.params.speciality);
+        const professionals = await professionalService.getProfBySpecialityAndHealthInsurance(idSpeciality, idHealthInsurance);
         res
             .status(200)
             .json({ message: 'Found all professionals', data: professionals });
@@ -95,5 +110,5 @@ async function remove(req, res) {
         res.status(500).json({ message: error.message });
     }
 }
-export { sanitizedProfessionalInput, findOne, findall, add, update, remove, getProf, getProfByHealthInsurance, };
+export { sanitizedProfessionalInput, findOne, findall, add, update, remove, getProf, getProfByHealthInsurance, getProfByHealthAndSpeciality, };
 //# sourceMappingURL=professional.controler.js.map

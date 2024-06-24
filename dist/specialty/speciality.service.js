@@ -4,7 +4,15 @@ class SpecialityService {
         this.entityManager = entityManager;
     }
     async findAllSpecialities() {
-        return await this.entityManager.find(Speciality, {});
+        const specialities = await this.entityManager.find(Speciality, {});
+        return specialities
+            .filter((speciality) => speciality.id !== undefined && speciality.id !== null)
+            .sort((a, b) => {
+            if (a.id !== undefined && b.id !== undefined) {
+                return a.id - b.id;
+            }
+            return 0;
+        });
     }
     async findOneSpeciality(id) {
         try {

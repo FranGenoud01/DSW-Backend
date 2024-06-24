@@ -51,6 +51,10 @@ __decorate([
     Property({ nullable: false }),
     __metadata("design:type", String)
 ], Patient.prototype, "password", void 0);
+__decorate([
+    Property({ nullable: false }),
+    __metadata("design:type", String)
+], Patient.prototype, "role", void 0);
 Patient = __decorate([
     Entity()
 ], Patient);

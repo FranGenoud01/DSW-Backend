@@ -7,9 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Cascade, Entity, ManyToMany, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
-import { Speciality } from "../specialty/speciality.entity.js";
-import { HealthInsurance } from "../health insurance/healthInsurance.entity.js";
+import { Cascade, Entity, ManyToMany, ManyToOne, PrimaryKey, Property, } from '@mikro-orm/core';
+import { Speciality } from '../specialty/speciality.entity.js';
+import { HealthInsurance } from '../health insurance/healthInsurance.entity.js';
 let Professional = class Professional {
 };
 __decorate([
