@@ -28,11 +28,12 @@ export class AuthService {
     patient: Patient
   ): Promise<{ accessToken: string; patient: Patient }> {
     const expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + 1); // Ejemplo: token expira en 1 día
+    expirationDate.setTime(expirationDate.getTime() + 60 * 60 * 1000); // Token expira en 1 hora
     const payload = {
       DNI: patient.DNI,
       name: patient.name,
       surname: patient.surname,
+      role: patient.role,
       exp: expirationDate.getTime() / 1000,
     };
     return {

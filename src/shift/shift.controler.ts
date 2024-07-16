@@ -25,6 +25,20 @@ async function generateShiftMonthly(req: Request, res: Response) {
       dateNow.getMonth() + 1,
       0
     );
+    // Verificar si el profesional ya tiene turnos generados en el mes actual
+    const existingShifts = await entityManager.find(Shift, {
+      licenseProfessional: professional,
+      dateShift: {
+        $gte: firstDayMonth.toISOString().split('T')[0],
+        $lte: lastDayMonth.toISOString().split('T')[0],
+      },
+    });
+
+    if (existingShifts.length > 0) {
+      return res.status(400).json({
+        message: 'El profesional ya tiene turnos generados este mes.',
+      });
+    }
     const shifts = [];
     // Iterar sobre cada día del mes actual
     for (
@@ -94,7 +108,8 @@ async function update(req: Request, res: Response) {
   try {
     const shiftId = Number.parseInt(req.params.id);
     const DNI = req.params.dni;
-    const shiftToUpdate = await shiftService.updateShift(shiftId, DNI);
+    const price = req.body.price;
+    const shiftToUpdate = await shiftService.updateShift(shiftId, DNI, price);
     if (!shiftToUpdate)
       return res.status(404).json({ message: 'Shift not found' });
     res.status(200).json({ message: 'Shift updated', data: shiftToUpdate });
@@ -110,6 +125,34 @@ async function cancel(req: Request, res: Response) {
     if (!shiftToCancel)
       return res.status(404).json({ message: 'Shift not found' });
     res.status(200).json({ message: 'Shift canceled', data: shiftToCancel });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+async function getShiftsByProfessional(req: Request, res: Response) {
+  try {
+    const licenseProfessional = req.params.licenseNumber;
+    const shifts = await shiftService.getShiftsFreeByProf(licenseProfessional);
+    res.status(200).json({ message: 'Shifts avaialable', data: shifts });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+async function getHoursFreeByDate(req: Request, res: Response) {
+  try {
+    const licenseProfessional = req.params.licenseNumber;
+    const date = req.params.date;
+    const shifts =
+      (await shiftService.getShiftsFreeByProf(licenseProfessional)) || [];
+    if (shifts.length === 0) {
+      return res.status(404).json({
+        message: 'No hay turnos disponibles para el profesional especificado.',
+      });
+    }
+    const hours = await shiftService.getHoursFreeByProf(shifts, date);
+    res.status(200).json({ message: 'Hours available', data: hours });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -140,6 +183,8 @@ async function removeByProf(req: Request, res: Response) {
 
 export {
   generateShiftMonthly,
+  getShiftsByProfessional,
+  getHoursFreeByDate,
   remove,
   update,
   cancel,

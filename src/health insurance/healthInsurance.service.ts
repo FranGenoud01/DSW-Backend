@@ -8,7 +8,18 @@ class HealthInsuranceService {
   }
 
   async findAllHealthInsurances() {
-    return await this.entityManager.find(HealthInsurance, {});
+    const healthInsurances = await this.entityManager.find(HealthInsurance, {});
+    return healthInsurances
+      .filter(
+        (healthInsurance) =>
+          healthInsurance.id !== undefined && healthInsurance.id !== null
+      )
+      .sort((a, b) => {
+        if (a.id !== undefined && b.id !== undefined) {
+          return a.id - b.id;
+        }
+        return 0;
+      });
   }
 
   async findOneHealthInsurance(id: number) {

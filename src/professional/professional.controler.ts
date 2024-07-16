@@ -54,7 +54,9 @@ async function add(req: Request, res: Response) {
       .status(201)
       .json({ message: 'Professional created', data: professional });
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    return res
+      .status(400)
+      .json({ message: `Ya existe un profesional con esa matrícula` });
   }
 }
 
@@ -64,6 +66,37 @@ async function getProf(req: Request, res: Response) {
     const professionals = await professionalService.getProfBySpeciality(
       idSpeciality
     );
+    res
+      .status(200)
+      .json({ message: 'Found all professionals', data: professionals });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+async function getProfByHealthInsurance(req: Request, res: Response) {
+  try {
+    const idHealthInsurance = parseInt(req.params.id);
+    const professionals = await professionalService.getProfByHealthInsurance(
+      idHealthInsurance
+    );
+    res
+      .status(200)
+      .json({ message: 'Found all professionals', data: professionals });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+async function getProfByHealthAndSpeciality(req: Request, res: Response) {
+  try {
+    const idHealthInsurance = parseInt(req.params.healthInsurance);
+    const idSpeciality = parseInt(req.params.speciality);
+    const professionals =
+      await professionalService.getProfBySpecialityAndHealthInsurance(
+        idSpeciality,
+        idHealthInsurance
+      );
     res
       .status(200)
       .json({ message: 'Found all professionals', data: professionals });
@@ -105,4 +138,6 @@ export {
   update,
   remove,
   getProf,
+  getProfByHealthInsurance,
+  getProfByHealthAndSpeciality,
 };

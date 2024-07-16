@@ -4,6 +4,8 @@ import {
   findOne,
   findall,
   getProf,
+  getProfByHealthAndSpeciality,
+  getProfByHealthInsurance,
   remove,
   update,
 } from './professional.controler.js';
@@ -28,6 +30,16 @@ professionalRouter.get(
   '/:id/speciality',
   (req, res, next) => authMiddleare.authenticateToken(req, res, next),
   (req: Request, res: Response) => getProf(req, res)
+);
+professionalRouter.get(
+  '/:id/healthInsurance',
+  (req, res, next) => authMiddleare.authenticateToken(req, res, next),
+  (req: Request, res: Response) => getProfByHealthInsurance(req, res)
+);
+professionalRouter.get(
+  '/:speciality/speciality/:healthInsurance/healthInsurance',
+  (req, res, next) => authMiddleare.authenticateToken(req, res, next),
+  (req: Request, res: Response) => getProfByHealthAndSpeciality(req, res)
 );
 professionalRouter.put(
   '/:id',

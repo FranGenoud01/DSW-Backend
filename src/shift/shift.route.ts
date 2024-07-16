@@ -5,6 +5,8 @@ import {
   findOne,
   findall,
   generateShiftMonthly,
+  getHoursFreeByDate,
+  getShiftsByProfessional,
   remove,
   removeByProf,
   update,
@@ -30,6 +32,16 @@ shiftRouter.get(
 );
 shiftRouter.get('/:dni/pat', (req: Request, res: Response) =>
   findByDNI(req, res)
+);
+shiftRouter.get(
+  '/:licenseNumber/professional',
+  (req, res, next) => authMiddleare.authenticateToken(req, res, next),
+  (req: Request, res: Response) => getShiftsByProfessional(req, res)
+);
+shiftRouter.get(
+  '/:licenseNumber/professional/:date/free',
+  (req, res, next) => authMiddleare.authenticateToken(req, res, next),
+  (req: Request, res: Response) => getHoursFreeByDate(req, res)
 );
 shiftRouter.post(
   '/:id/professional',

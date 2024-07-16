@@ -14,7 +14,7 @@ class PatientService {
     return await this.entityManager.find(
       Patient,
       {},
-      { populate: ['healthInsurance'] }
+      { populate: ['healthInsurance' as 'healthInsurance'] }
     );
   }
 
@@ -23,7 +23,7 @@ class PatientService {
       return await this.entityManager.findOneOrFail(
         Patient,
         { DNI },
-        { populate: ['healthInsurance'] }
+        { populate: ['healthInsurance' as 'healthInsurance'] }
       );
     } catch (error) {
       return null;
@@ -34,7 +34,12 @@ class PatientService {
     const patientToUpdate = await this.entityManager.findOneOrFail(Patient, {
       DNI,
     });
-    this.entityManager.assign(patientToUpdate, patientData);
+    const hashedPassword = await this.hashPassword(patientData.password);
+    const patient = {
+      ...patientData,
+      password: hashedPassword,
+    };
+    this.entityManager.assign(patientToUpdate, patient);
     await this.entityManager.flush();
     return patientToUpdate;
   }
@@ -59,6 +64,7 @@ class PatientService {
     const dni = patientData.DNI;
     const hashedPassword = await this.hashPassword(patientData.password);
     const patient = await this.findOneByDNI(dni);
+    const rol = 'user';
     if (patient) {
       throw new Error('Ya existe un paciente con este DNI');
     }
@@ -66,6 +72,7 @@ class PatientService {
       ...patientData,
       password: hashedPassword,
       DNI: dni,
+      role: rol,
     };
     const newPatient = this.entityManager.create(Patient, updatedPatientData);
     await this.entityManager.persistAndFlush(newPatient);
