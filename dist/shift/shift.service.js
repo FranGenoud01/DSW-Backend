@@ -6,7 +6,12 @@ class ShiftService {
         this.entityManager = entityManager;
     }
     async findAllShifts() {
-        return await this.entityManager.find(Shift, {});
+        return await this.entityManager.find(Shift, {}, {
+            populate: [
+                'licenseProfessional',
+                'licenseProfessional.speciality',
+            ],
+        });
     }
     async findOneShift(id) {
         try {

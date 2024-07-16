@@ -7,10 +7,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Cascade, Entity, ManyToMany, ManyToOne, PrimaryKey, Property, } from '@mikro-orm/core';
+import { Cascade, Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property, } from '@mikro-orm/core';
 import { Speciality } from '../specialty/speciality.entity.js';
 import { HealthInsurance } from '../health insurance/healthInsurance.entity.js';
+import { Shift } from '../shift/shift.entity.js';
 let Professional = class Professional {
+    constructor() {
+        this.shifts = new Collection(this);
+    }
 };
 __decorate([
     PrimaryKey({ nullable: false, unique: true }),
@@ -39,6 +43,12 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], Professional.prototype, "healthInsurances", void 0);
+__decorate([
+    OneToMany(() => Shift, (shift) => shift.licenseProfessional, {
+        cascade: [Cascade.REMOVE],
+    }),
+    __metadata("design:type", Object)
+], Professional.prototype, "shifts", void 0);
 Professional = __decorate([
     Entity()
 ], Professional);
