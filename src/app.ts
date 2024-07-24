@@ -43,6 +43,6 @@ app.use((_, res) => {
   return res.status(404).send({ message: 'Resource not found' });
 });
 
-app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000/');
+app.listen(process.env.PORT, () => {
+  console.log('Server running');
 });
