@@ -11,7 +11,13 @@ import { authRouter } from './auth/auth.route.js';
 import cors from 'cors';
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: '*',
+    methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.use((req, res, next) => {
