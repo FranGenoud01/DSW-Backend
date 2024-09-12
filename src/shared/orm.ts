@@ -8,7 +8,7 @@ export const orm = await MikroORM.init({
   entities: ['dist/**/*.entity.js'],
   entitiesTs: ['src/**/*.entity.ts'],
 
-  clientUrl: process.env.POSTGRES_URL,
+  clientUrl: process.env.MYSQL,
   highlighter: new SqlHighlighter(),
   debug: true,
   driver: MySqlDriver,
