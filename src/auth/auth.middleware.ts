@@ -27,7 +27,11 @@ export class AuthMiddleware {
       return res.status(404).json({ message: 'Token no encontrado.' });
 
     try {
-      const decodeToken = jwt.verify(token, '123456');
+      const secret = process.env.JWT_SECRET;
+      if (!secret) {
+        return res.status(500).json({ message: 'Token secret not defined.' });
+      }
+      const decodeToken = jwt.verify(token, secret);
 
       if (!decodeToken) {
         return res.status(404).json({ message: 'Token no encontrado.' });
