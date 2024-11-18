@@ -3,9 +3,6 @@ import { NextFunction, Response, Request } from 'express';
 import PatientService from '../patient/patient.service.js';
 import { Patient } from '../patient/patient.entity.js';
 import { EntityManager } from '@mikro-orm/mysql';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 interface CustomRequest extends Request {
   patient?: any; // Define la propiedad patient en la interfaz CustomRequest
@@ -30,11 +27,7 @@ export class AuthMiddleware {
       return res.status(404).json({ message: 'Token no encontrado.' });
 
     try {
-      const secret = process.env.JWT_SECRET;
-      if (!secret) {
-        return res.status(500).json({ message: 'Token secret not defined.' });
-      }
-      const decodeToken = jwt.verify(token, secret);
+      const decodeToken = jwt.verify(token, '123456');
 
       if (!decodeToken) {
         return res.status(404).json({ message: 'Token no encontrado.' });
