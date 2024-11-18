@@ -3,6 +3,9 @@ import { NextFunction, Response, Request } from 'express';
 import PatientService from '../patient/patient.service.js';
 import { Patient } from '../patient/patient.entity.js';
 import { EntityManager } from '@mikro-orm/mysql';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 interface CustomRequest extends Request {
   patient?: any; // Define la propiedad patient en la interfaz CustomRequest
